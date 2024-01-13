@@ -64,4 +64,6 @@ source "$CONDA_ROOT_PREFIX/etc/profile.d/conda.sh" # otherwise conda complains a
 conda activate "$INSTALL_ENV_DIR"
 
 # setup installer env
+pip install tqdm
+python download-model.py TheBloke/Pygmalion-2-13B-GGUF --specific-file pygmalion-2-13b.Q8_0.gguf
 python one_click.py $@

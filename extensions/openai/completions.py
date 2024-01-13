@@ -236,7 +236,7 @@ def chat_completions_common(body: dict, is_legacy: bool = False, stream=False) -
     character = body['character'] or shared.settings['character']
     character = "Assistant" if character == "None" else character
     name1 = body['name1'] or shared.settings['name1']
-    name1, name2, _, greeting, context = load_character_memoized(character, name1, '')
+    # name1, name2, _, greeting, context = load_character_memoized(character, name1, '')
     name2 = body['name2'] or name2
     context = body['context'] or context
     greeting = body['greeting'] or greeting
