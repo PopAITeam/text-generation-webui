@@ -24,6 +24,28 @@ from modules.chat import (
 from modules.presets import load_preset_memoized
 from modules.text_generation import decode, encode, generate_reply
 
+import logging
+from logging.handlers import TimedRotatingFileHandler
+
+def setup_daily_logger():
+    logger = logging.getLogger('DailyLogger')
+    logger.setLevel(logging.DEBUG)
+    
+    # Create a timed rotating file handler
+    file_handler = TimedRotatingFileHandler('app.log', when='midnight', interval=1, backupCount=0)  # Rotate daily, no limit on files
+    formatter = logging.Formatter('%(asctime)s | %(name)s | %(levelname)s | %(message)s')
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+    
+    logger.addHandler(file_handler)
+    return logger
+
+# Get the configured logger
+logger = setup_daily_logger()
+
+def log_chat_requests(user_input,answer,prompt,generate_params):
+    log_text = f'user_input:{user_input}\nanswer:{answer}\nprompt:{prompt}\ngenerate_params:{generate_params}'
+    logger.debug(log_text)
 
 class LogitsBiasProcessor(LogitsProcessor):
     def __init__(self, logit_bias={}):
@@ -317,6 +339,8 @@ def chat_completions_common(body: dict, is_legacy: bool = False, stream=False) -
             chunk = chat_streaming_chunk(new_content)
             yield chunk
 
+    log_chat_requests(user_input,answer,prompt,generate_params) # log the chat request to a log file, for debug purposes
+    
     completion_token_count = len(encode(answer)[0])
     stop_reason = "stop"
     if token_count + completion_token_count >= generate_params['truncation_length'] or completion_token_count >= generate_params['max_new_tokens']:
